@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from google import genai
+from typing import List, Optional
 
 app = FastAPI()
 client = genai.Client(api_key="AQ.Ab8RN6IDMZa-Yswenrcgtz2gCsHPRZoQbxGqqsrlbA2-aYcIsg")
@@ -30,9 +31,14 @@ crop_facts = {
     "coffee": "Needs moderate nitrogen, pH 6.0-6.5, shaded, cool humid climate.",
 }
 
+class Message(BaseModel):
+    question: str
+    answer: str
+
 class ChatInput(BaseModel):
     question: str
     crop_name: str = ""
+    history: Optional[List[Message]] = []
 
 @app.get("/")
 def home():
@@ -42,18 +48,30 @@ def home():
 def chatbot_query(data: ChatInput):
     fact = crop_facts.get(data.crop_name.lower().strip())
 
+    # purani conversation ko text mein convert karo
+    history_text = ""
+    for msg in data.history[-5:]:  # sirf last 5 messages yaad rakhega
+        history_text += f"Farmer asked: {msg.question}\nYou answered: {msg.answer}\n\n"
+
     if fact:
-        prompt = f"""You are a helpful farming assistant for Indian farmers.
-Use this verified fact as your main source: {fact}
-Question: {data.question}
-Answer in simple, easy words (avoid technical jargon). Keep it short.
-Reply in the same language the farmer used (Hindi/Hinglish/English)."""
+        base_instruction = f"Use this verified fact as your main source: {fact}"
     else:
-        prompt = f"""You are a helpful farming assistant for Indian farmers.
-We don't have specific verified data for this crop/topic in our system.
-Start your answer by saying (in the farmer's language) that this is general knowledge, not from our verified database.
-Then answer this question simply and helpfully: {data.question}
-Keep it short and in simple, easy words. Reply in the same language the farmer used."""
+        base_instruction = (
+            "We don't have specific verified data for this crop/topic. "
+            "Start by saying (in farmer's language) this is general knowledge, not from our verified database."
+        )
+
+    prompt = f"""You are a helpful farming assistant for Indian farmers.
+{base_instruction}
+
+Previous conversation (for context):
+{history_text if history_text else "No previous conversation."}
+
+New question: {data.question}
+
+Answer in simple, easy words (avoid technical jargon). Keep it short.
+Reply in the same language the farmer used (Hindi/Hinglish/English).
+Use the previous conversation to understand follow-up questions if relevant."""
 
     response = client.models.generate_content(
         model="gemini-3.6-flash",
