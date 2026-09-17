@@ -7,14 +7,16 @@ app = FastAPI()
 client = genai.Client(api_key="AQ.Ab8RN6IDMZa-Yswenrcgtz2gCsHPRZoQbxGqqsrlbA2-aYcIsg")
 
 crop_facts = {
-    "rice": "Needs high nitrogen, pH 5.5-6.5, heavy rainfall (200mm+), grown in Kharif season.",
-    "maize": "Needs moderate nitrogen, pH 5.5-7.0, moderate rainfall, warm climate.",
+    "rice": "Needs high nitrogen, pH 5.5-6.5, heavy rainfall (200mm+), grown in Kharif season. MSP for 2026-27: Rs 2,441 per quintal.",
+    "maize": "Needs moderate nitrogen, pH 5.5-7.0, moderate rainfall, warm climate. MSP for 2026-27: Rs 2,410 per quintal.",
+    "pigeonpeas": "Needs low nitrogen, pH 5.0-7.0, moderate rainfall, warm climate. MSP for 2026-27: Rs 8,450 per quintal.",
+    "mungbean": "Needs low nitrogen, pH 6.2-7.2, moderate rainfall, warm season. MSP for 2026-27: Rs 8,780 per quintal.",
+    "blackgram": "Needs low nitrogen, pH 6.0-7.5, moderate rainfall, warm climate. MSP for 2026-27: Rs 8,200 per quintal.",
+    "cotton": "Needs high potassium, pH 6.0-8.0, warm climate, moderate rainfall. MSP for 2026-27: Rs 8,267/quintal (medium staple), Rs 8,667 (long staple).",
+    "coconut": "Needs high potassium, pH 5.5-7.5, coastal humid climate, high rainfall. MSP (as Copra) for 2026-27: Rs 12,500 per quintal.",
     "chickpea": "Needs low nitrogen (fixes its own), pH 6.0-7.5, low rainfall, cool season crop.",
     "kidneybeans": "Needs moderate nitrogen, pH 5.5-6.5, moderate rainfall, cool climate.",
-    "pigeonpeas": "Needs low nitrogen, pH 5.0-7.0, moderate rainfall, warm climate.",
     "mothbeans": "Needs low water, pH 6.0-7.5, drought-tolerant, grown in dry regions.",
-    "mungbean": "Needs low nitrogen, pH 6.2-7.2, moderate rainfall, warm season.",
-    "blackgram": "Needs low nitrogen, pH 6.0-7.5, moderate rainfall, warm climate.",
     "lentil": "Needs low nitrogen, pH 6.0-7.5, low rainfall, cool season crop.",
     "pomegranate": "Needs low water once established, pH 5.5-7.5, dry to semi-arid climate.",
     "banana": "Needs high potassium, pH 5.5-7.0, high rainfall, warm humid climate.",
@@ -25,8 +27,6 @@ crop_facts = {
     "apple": "Needs moderate nutrients, pH 5.5-6.5, cold climate, chilling hours required.",
     "orange": "Needs moderate nitrogen, pH 5.5-7.5, subtropical climate, moderate rainfall.",
     "papaya": "Needs high nitrogen, pH 6.0-6.5, warm climate, well-drained soil.",
-    "coconut": "Needs high potassium, pH 5.5-7.5, coastal humid climate, high rainfall.",
-    "cotton": "Needs high potassium, pH 6.0-8.0, warm climate, moderate rainfall.",
     "jute": "Needs high nitrogen, pH 6.0-7.5, high humidity, heavy rainfall.",
     "coffee": "Needs moderate nitrogen, pH 6.0-6.5, shaded, cool humid climate.",
 }
