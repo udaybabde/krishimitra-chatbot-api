@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = genai.Client(api_key="AQ.Ab8RN6L_eqtNDmi20Os7wOU5QbnzNurSeH_oQHRpYSf77N94hQ")
+client = genai.Client(api_key="AQ.Ab8RN6INqlmI0JFFg9dCvp0DKwz9lhB_gV_bHOxGA_JibErWlQ")
 
 crop_facts = {
     "rice": "Needs high nitrogen, pH 5.5-6.5, heavy rainfall (200mm+), grown in Kharif season. MSP for 2026-27: Rs 2,441 per quintal.",
