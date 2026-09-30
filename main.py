@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from google import genai
 from typing import List, Optional
+import os
 
 app = FastAPI()
 
@@ -14,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = genai.Client(api_key="AQ.Ab8RN6INqlmI0JFFg9dCvp0DKwz9lhB_gV_bHOxGA_JibErWlQ")
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 crop_facts = {
     "rice": "Needs high nitrogen, pH 5.5-6.5, heavy rainfall (200mm+), grown in Kharif season. MSP for 2026-27: Rs 2,441 per quintal.",
