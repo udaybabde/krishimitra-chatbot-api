@@ -95,7 +95,7 @@ Answer in simple, easy words (avoid technical jargon). Keep it short.
 Reply in the same language the farmer used (Hindi/Hinglish/English).
 Use the previous conversation to understand follow-up questions if relevant."""
 
-    import time
+        import time
     last_error = None
     for attempt in range(3):
         try:
@@ -106,6 +106,7 @@ Use the previous conversation to understand follow-up questions if relevant."""
             return {"answer": response.text}
         except Exception as e:
             last_error = str(e)
-            time.sleep(2)
+            print(f"Attempt {attempt+1} failed: {last_error}")
+            time.sleep(3)
 
-    return {"answer": "The AI service is currently busy. Please try again in a moment."}
+    return {"answer": "The AI service is currently busy. Please try again in a moment.", "debug_error": last_error}
