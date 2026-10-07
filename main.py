@@ -95,8 +95,17 @@ Answer in simple, easy words (avoid technical jargon). Keep it short.
 Reply in the same language the farmer used (Hindi/Hinglish/English).
 Use the previous conversation to understand follow-up questions if relevant."""
 
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt
-    )
-    return {"answer": response.text}
+    import time
+    last_error = None
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt
+            )
+            return {"answer": response.text}
+        except Exception as e:
+            last_error = str(e)
+            time.sleep(2)
+
+    return {"answer": "The AI service is currently busy. Please try again in a moment."}
