@@ -1,12 +1,11 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from google import genai
 from typing import List, Optional
 import os
 
 app = FastAPI()
-
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,10 +24,12 @@ crop_facts = {
     "blackgram": "Needs low nitrogen, pH 6.0-7.5, moderate rainfall, warm climate. MSP for 2026-27: Rs 8,200 per quintal.",
     "cotton": "Needs high potassium, pH 6.0-8.0, warm climate, moderate rainfall. MSP for 2026-27: Rs 8,267/quintal (medium staple), Rs 8,667 (long staple).",
     "coconut": "Needs high potassium, pH 5.5-7.5, coastal humid climate, high rainfall. MSP (as Copra) for 2026-27: Rs 12,500 per quintal.",
-    "chickpea": "Needs low nitrogen (fixes its own), pH 6.0-7.5, low rainfall, cool season crop.",
+    "soybean": "Needs moderate nitrogen, pH 6.0-7.5, moderate rainfall, warm climate. MSP for 2026-27: Rs 5,708 per quintal.",
+    "chickpea": "Needs low nitrogen (fixes its own), pH 6.0-7.5, low rainfall, cool season crop. MSP for 2026-27: Rs 5,875 per quintal.",
+    "lentil": "Needs low nitrogen, pH 6.0-7.5, low rainfall, cool season crop. MSP for 2026-27: Rs 7,000 per quintal.",
+    "jute": "Needs high nitrogen, pH 6.0-7.5, high humidity, heavy rainfall. MSP for 2026-27: Rs 5,925 per quintal.",
     "kidneybeans": "Needs moderate nitrogen, pH 5.5-6.5, moderate rainfall, cool climate.",
     "mothbeans": "Needs low water, pH 6.0-7.5, drought-tolerant, grown in dry regions.",
-    "lentil": "Needs low nitrogen, pH 6.0-7.5, low rainfall, cool season crop.",
     "pomegranate": "Needs low water once established, pH 5.5-7.5, dry to semi-arid climate.",
     "banana": "Needs high potassium, pH 5.5-7.0, high rainfall, warm humid climate.",
     "mango": "Needs moderate nutrients, pH 5.5-7.5, distinct dry and wet seasons.",
@@ -38,7 +39,6 @@ crop_facts = {
     "apple": "Needs moderate nutrients, pH 5.5-6.5, cold climate, chilling hours required.",
     "orange": "Needs moderate nitrogen, pH 5.5-7.5, subtropical climate, moderate rainfall.",
     "papaya": "Needs high nitrogen, pH 6.0-6.5, warm climate, well-drained soil.",
-    "jute": "Needs high nitrogen, pH 6.0-7.5, high humidity, heavy rainfall.",
     "coffee": "Needs moderate nitrogen, pH 6.0-6.5, shaded, cool humid climate.",
 }
 
@@ -57,19 +57,30 @@ def home():
 
 @app.post("/chatbot-query")
 def chatbot_query(data: ChatInput):
-    fact = crop_facts.get(data.crop_name.lower().strip())
+    crop_input = data.crop_name.lower().strip()
+
+    # Agar crop_name khaali hai, to question ke text mein se khud dhoondo
+    if not crop_input:
+        question_lower = data.question.lower()
+        for crop in crop_facts.keys():
+            if crop in question_lower:
+                crop_input = crop
+                break
+
+    fact = crop_facts.get(crop_input)
 
     # purani conversation ko text mein convert karo
     history_text = ""
-    for msg in data.history[-5:]:  # sirf last 5 messages yaad rakhega
+    for msg in data.history[-5:]:
         history_text += f"Farmer asked: {msg.question}\nYou answered: {msg.answer}\n\n"
 
     if fact:
         base_instruction = f"Use this verified fact as your main source: {fact}"
     else:
         base_instruction = (
-            "We don't have specific verified data for this crop/topic. "
-            "Start by saying (in farmer's language) this is general knowledge, not from our verified database."
+            "Answer using your own general agricultural knowledge. "
+            "Start your reply with the symbol \u2139\ufe0f (info symbol) followed by a space, "
+            "then go straight into the answer. Do not write any sentence about data sources."
         )
 
     prompt = f"""You are a helpful farming assistant for Indian farmers.
