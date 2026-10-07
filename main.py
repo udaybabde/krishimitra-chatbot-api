@@ -160,7 +160,7 @@ Use the previous conversation to understand follow-up questions if relevant."""
     for attempt in range(3):
         try:
             response = client.models.generate_content(
-                model="gemini-2.5-flash", contents=prompt
+                model="gemini-1.5-flash", contents=prompt
             )
             return {"answer": response.text}
         except Exception as e:
